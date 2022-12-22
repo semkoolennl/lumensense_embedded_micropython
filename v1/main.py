@@ -2,10 +2,12 @@
 from microbit import *
 from timeutils import *
 from communications import *
+from models import *
+from controllers import *
 
-UUID = 0x01
-rttp = rttp(UUID)
-
+# set local device its UUID
+UUID = "0B01"
+# set current date and time in datetime object
 datetime=DateTime(
     year=2020,
     month=12,
@@ -15,24 +17,36 @@ datetime=DateTime(
     seconds=55,
 )
 
+# initiate clock for keeping track of date and time
 clock = Clock(datetime)
-timer = Timer()
-timer.time = 10000
+# initiate countdown timer object
+timer  = Timer()
+logger = Logger(clock)
+
+
+# creates a lamp entity for this device
+lamp = Lamp(UUID)
+
+# initiate collection object for lamps and set local lamp
+collection = LampCollection(lamp)
+
+# initiate message handler and pass the lamp collection
+motionHandler  = MotionHandler(timer, collection)
+messageHandler = MessageHandler(collection, logger)
+lightHandler   = LightHandler(timer)
+
 
 start = False
 
-# Code in a 'while True:' loop repeats forever
-while True:
-    while (rttp.nextMessage()):
-        message = rttp.last_response
-        
-        
-    if button_a.is_pressed():
-        clock.start()
-        start = True
+# main loop
+while True:       
+    clock.tick()
+    timer.update(clock.lastTick)
 
-    if start:
-        clock.tick()
-        timer.update(clock.lastTick)
-        print(timer)
+    messageHandler.handle()
+    motionHandler.handle()
+    lightHandler.handle()
+    print(logger.clock.datetime)
+    
+    
         

@@ -96,10 +96,8 @@ class DateTime:
 class Clock:
     def __init__(self, datetime=DateTime()):
         self.lastTick = 0
-        self.datetime = datetime
-
-    def start(self):
         self.lastcount = time.ticks_ms()
+        self.datetime = datetime
     
     def tick(self):
         if self.datetime.seconds >= 0:

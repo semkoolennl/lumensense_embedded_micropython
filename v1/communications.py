@@ -1,5 +1,6 @@
 import radio
 import machine
+from models import Message
 
 radio.config(
     length=251,
@@ -11,29 +12,27 @@ radio.config(
 )
 radio.on
 
-
-class rttp:
+class RTTP:
     def __init__(self, uuid):
         self.uuid = uuid
-        self.last_request = ""
+        self.message = Message()
+        self.last_request  = ""
         self.last_response = ""
 
-    def send(self, method, recipient="ALL", data=""):
-        self.last_request = recipient + ";" + method + ";" + data
+    def send(self):
+        self.last_request = self.message.encode()
         radio.send(self.last_request)
 
     def nextMessage(self):
         response = radio.receive()
         if response:
             self.last_response = response
+            self.message.parse(self.last_response)
             return True
         return False
 
-    def sendACT(self, recipient="ALL"):
-        self.send("ACT", recipient)
-
-    def sendDEACT(self, recipient="ALL"):
-        self.send("DEACT", recipient)
-
-    def sendIACT(self, recipient="ALL"):
-        self.send("IACT", recipient)
+    def setMessage(self, method, data = "", recipient = "ALL"):
+        self.message.method    = method
+        self.message.source    = self.uuid
+        self.message.recipient = recipient
+        self.message.data      = data
