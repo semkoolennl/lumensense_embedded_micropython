@@ -1,14 +1,10 @@
-class Light:
-    def __init__(self):
-        self.on = False
-    
 class Lamp:
     def __init__(self, uuid: str, activator: bool = False):
         self.uuid        = uuid
         self.activated   = False
         self.iactivated  = False
         self.activator   = activator
-        self.activations = Activations
+        self.activations = Activations()
         
 
 class LampCollection:
@@ -22,11 +18,18 @@ class LampCollection:
     def getById(self, uuid: str):
         return self.lamps[uuid]
 
+    def set(self, lamp):
+        self.lamps[lamp.uuid] = lamp
+
+    def setActivated(self, bool, uuid):
+        self.lamps[uuid] = bool
+
     def isActivated(self):
-        for lamp in self.lamps:
-            if lamp.activated:
+        for name in self.lamps:
+            lamp = self.lamps[name]
+            if lamp.activated and lamp.activator:
                 return True
-        return False
+        return self.local.activated
         
         
 class Activations:

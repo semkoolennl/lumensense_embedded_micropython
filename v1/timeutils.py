@@ -75,9 +75,9 @@ class DateTime:
 
     def getTimeArray(self):
         if self.seconds < 10:
-            seconds = '0' + str(self.seconds)
+            seconds = '0' + str(int(self.seconds))
         else:
-            seconds = str(self.seconds)
+            seconds = str(int(self.seconds))
 
         if self.minutes < 10:
             minutes = '0' + str(self.minutes)

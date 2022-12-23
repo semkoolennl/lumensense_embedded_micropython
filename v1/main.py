@@ -28,12 +28,13 @@ logger = Logger(clock)
 lamp = Lamp(UUID)
 
 # initiate collection object for lamps and set local lamp
-collection = LampCollection(lamp)
+lamps = LampCollection(lamp)
+lamps.add(Lamp("0B02", True))
 
 # initiate message handler and pass the lamp collection
-motionHandler  = MotionHandler(timer, collection)
-messageHandler = MessageHandler(collection, logger)
-lightHandler   = LightHandler(timer)
+motionHandler  = MotionHandler(lamps, logger)
+messageHandler = MessageHandler(lamps, logger)
+lightHandler   = LightHandler(lamps, logger)
 
 
 start = False
@@ -41,12 +42,18 @@ start = False
 # main loop
 while True:       
     clock.tick()
-    timer.update(clock.lastTick)
-
+    timer.update(clock.lastTick)    
+    
     messageHandler.handle()
     motionHandler.handle()
-    lightHandler.handle()
-    print(logger.clock.datetime)
+
+    if motionHandler.resetTimer:
+        timer.time = 3000
+
+    lightHandler.handle(timer)
+
+
+    
     
     
         
