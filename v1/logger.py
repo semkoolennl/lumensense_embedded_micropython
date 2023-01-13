@@ -3,7 +3,7 @@ import log
 class Logger:
     def __init__(self, clock):
         self.clock = clock
-        log.set_mirroring(True)
+        log.set_mirroring(False)
         log.set_labels(
             'log',
             'timestamp',

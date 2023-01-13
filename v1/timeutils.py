@@ -52,12 +52,12 @@ class DateTime:
         date = date.split('/')
         time = time.split(':')
 
-        self.year    = date[0]
-        self.month   = date[1]
-        self.day     = date[2]
-        self.hours   = time[0]
-        self.minutes = time[1]
-        self.seconds = time[2]
+        self.year    = int(date[0])
+        self.month   = int(date[1])
+        self.day     = int(date[2])
+        self.hours   = int(time[0])
+        self.minutes = int(time[1])
+        self.seconds = int(time[2])
 
         return self
 

@@ -15,6 +15,11 @@ class LampCollection:
     def add(self, lamp: Lamp):
         self.lamps[lamp.uuid] = lamp
 
+    def getAll(self):
+        arr = self.lamps
+        arr[self.local.uuid] = self.local
+        return arr
+
     def getById(self, uuid: str):
         return self.lamps[uuid]
 
@@ -56,7 +61,8 @@ class Message:
         self.data      = data
 
     def encode(self):
-        return self.__repr__()
+        return self.__repr__()       
+            
 
     def parse(self, string):
         arr = string.split(";")
@@ -74,3 +80,6 @@ class Message:
             self.recipient,
             self.data
         ])
+
+    
+

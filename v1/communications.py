@@ -1,6 +1,7 @@
 import radio
 from models import Message
 from logger import Logger
+from app import *
 
 radio.config(
     length=251,
@@ -12,10 +13,68 @@ radio.config(
 )
 radio.on
 
+class MessageHandler():
+    def __init__(self, app):
+        self.app = app
+
+    def handle(self):
+        while (True):
+            message = self.app.rttp.nextMessage()
+            if not message:
+                break
+            
+            if message.recipient != "ALL" and message.recipient != self.app.lamps.local.uuid:
+                continue
+                   
+            if message.method == "ACT":
+                self.handleACT(message)
+            elif message.method == "IACT":
+                self.handleIACT(message)
+            elif message.method == "DEACT":
+                self.handleDEACT(message)
+            else:
+                self.handleUnknownMethod(message)
+
+
+    def handleACT(self, message: Message):
+        self.app.logger.general("MessageHandler - handleACT()")
+        sourceLamp = self.app.lamps.getById(message.source)
+        sourceLamp.activated = True
+        self.app.lamps.set(sourceLamp)
+        if sourceLamp.activator:
+            self.app.lamps.local.iactivated = True
+        self.app.rttp.setMessage("IACT")
+        self.app.rttp.send()
+
+    def handleIACT(self, message: Message):
+        self.app.logger.general("MessageHandler - handleIACT()")
+        sourceLamp = self.app.lamps.getById(message.source)
+        sourceLamp.iactivated = True
+
+    def handleDEACT(self, message: Message):
+        self.app.logger.general("MessageHandler - handleDEACT()")
+        sourceLamp = self.app.lamps.getById(message.source)
+        if sourceLamp.activated:
+            sourceLamp.activated = False
+            sourceLamp.activations.direct += 1
+            self.app.lamps.local.activations.indirect += 1
+        if self.app.lamps.local.iactivated:
+            self.app.lamps.local.iactivated = False
+            self.app.lamps.local.activations.indirect += 1
+        self.app.lamps.set(sourceLamp)
+
+    def handleUnknownMethod(self, message: Message):
+        self.app.logger.general("MessageHandler - handleUnknownMethod()")
+        msg = "'" + message.encode() + "'"
+        self.app.logger.error("Unkown method: " + msg, "fatal")
+            
+                
+                
+
 class RTTP:
     def __init__(self, uuid, logger: Logger):
-        self.uuid = uuid
-        self.message = Message()
+        self.uuid          = uuid
+        self.message       = Message()
         self.last_request  = ""
         self.last_response = ""
         self.logger        = logger
