@@ -34,14 +34,13 @@ class App:
         for uuid in self.lamps.getAll():
             lamp = self.lamps.getById(uuid)
             activations.append(uuid + "=" + str(lamp.activations))
+            lamp.activations = 0
         return ",".join(activations)
 
     def getStatus(self):
         status = []
         for uuid in self.lamps.getAll():
             lamp = self.lamps.getById(uuid)
-            status.append(uuid + "=" + str(lamp.activated | lamp.iactivated))
+            status.append(uuid + "=" + str(lamp.activated | lamp.iactivated | lamp.lighton))
         return ",".join(status)
         
-            
-            

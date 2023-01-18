@@ -1,6 +1,4 @@
-from communications import RTTP
 from models import *
-from logger import Logger
 from serial import *
 from microbit import *
 
@@ -14,8 +12,9 @@ class Handler:
         self.app.lamps.local.activations += 1
         self.app.rttp.send()
 
-    def deactivate(self):
-        self.app.rttp.setMessage("DEACT")
+    def deactivate(self, timer):
+        if timer:
+            self.app.rttp.setMessage("DEACT")
         self.app.lamps.local.activated = False
         self.app.rttp.send()
 
@@ -44,7 +43,7 @@ class MotionHandler(Handler):
                 self.activate()
             else:
                 self.app.logger.general("MotionHandler - No motion detected, deactivating")
-                self.deactivate()
+                self.deactivate(False)
            
 
 class LightHandler(Handler):
@@ -54,20 +53,14 @@ class LightHandler(Handler):
 
     def handle(self):
         if self.app.timer.time > 0 and not self.lightOn:
-            self.app.logger.general("LightHandler - Light turned on")
             self.lightOn = True
             pin0.write_digital(1)
             display.show(Image.HEART)
+            self.app.lamps.local.lighton = True
         elif self.app.timer.time <= 0 and self.lightOn:
-            self.app.logger.general("LightHandler - Light turned off")
             self.lightOn = False
-            self.deactivate()
+            self.deactivate(True)
             pin0.write_digital(0)
             display.clear()
-
-        
-        
-            
-            
-            
-        
+            self.app.lamps.local.lighton = False
+   

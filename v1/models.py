@@ -2,6 +2,7 @@ class Lamp:
     def __init__(self, uuid: str, activator: bool = False):
         self.uuid        = uuid
         self.activated   = False
+        self.lighton     = False
         self.iactivated  = False
         self.activator   = activator
         self.activations = 0
@@ -30,17 +31,11 @@ class LampCollection:
         self.lamps[uuid] = bool
 
     def isActivated(self):
-        if self.isIActivated():
-            return True
-        return self.local.activated
-
-    def isIActivated(self):
-        for name in self.lamps:
-            lamp = self.lamps[name]
-            if lamp.activated and lamp.activator:
+        for uuid in self.lamps:
+            lamp = self.lamps[uuid]
+            if lamp.activator and lamp.activated:
                 return True
-        return False
-        
+        return self.local.activated        
         
 class Activations:
     def __init__(self, direct = 0, indirect = 0):

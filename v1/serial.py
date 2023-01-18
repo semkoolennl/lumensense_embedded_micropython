@@ -93,7 +93,3 @@ class Request:
             self.payload = arr[2]
 
         return self
-
-    
-        
-            

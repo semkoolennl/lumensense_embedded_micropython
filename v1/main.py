@@ -21,10 +21,10 @@ datetime=DateTime(
 UUID = "BLACK"
 
 app = App(UUID, datetime)
-app.lamps.add(Lamp("RED", False))
-app.lamps.add(Lamp("GREEN", False))
 # app.lamps.add(Lamp("BLACK", False))
 app.lamps.add(Lamp("YELLOW", True))
+app.lamps.add(Lamp("RED", False))
+app.lamps.add(Lamp("GREEN", False))
 
 serialHandler  = SerialHandler(app)
 messageHandler = MessageHandler(app)
@@ -32,20 +32,21 @@ motionHandler  = MotionHandler(app)
 lightHandler   = LightHandler(app)
 
 while True:
-    serialHandler.handle()
-    messageHandler.handle()
-    motionHandler.handle()
-    
-    if motionHandler.resetTimer:
-        app.timer.time = 3000
+    try:
+        serialHandler.handle()
+        messageHandler.handle()
+        motionHandler.handle()
         
-    lightHandler.handle()
-    
-    app.run()
-    
+        if motionHandler.resetTimer:
+            app.timer.time = 3000
+            
+        lightHandler.handle()
+    except Exception as e:
+        app.logger.error("Unknown error handlers: " + str(e))
+        sleep(5000)
 
-
-    
-    
-    
-        
+    try:
+        app.run()
+    except Exception as e:
+        app.logger.error("Unknown erro app.run(): " + str(e))
+        sleep(5000)

@@ -37,26 +37,27 @@ class MessageHandler():
 
 
     def handleACT(self, message: Message):
-        self.app.logger.general("MessageHandler - handleACT()")
         sourceLamp = self.app.lamps.getById(message.source)
         sourceLamp.activated    = True
         sourceLamp.activations += 1
         self.app.lamps.set(sourceLamp)
         if sourceLamp.activator:
             self.app.lamps.local.iactivated = True
-        self.app.rttp.setMessage("IACT")
-        self.app.rttp.send()
+            self.app.rttp.setMessage("IACT")
+            self.app.rttp.send()
 
     def handleIACT(self, message: Message):
-        self.app.logger.general("MessageHandler - handleIACT()")
         sourceLamp = self.app.lamps.getById(message.source)
         sourceLamp.iactivated = True
+        self.app.lamps.set(sourceLamp)
 
     def handleDEACT(self, message: Message):
-        self.app.logger.general("MessageHandler - handleDEACT()")
         sourceLamp = self.app.lamps.getById(message.source)
         if sourceLamp.activated:
             sourceLamp.activated = False
+            if sourceLamp.activator:
+                self.app.lamps.local.iactivated = False
+        if sourceLamp.iactivated:
             sourceLamp.iactivated = False
         self.app.lamps.set(sourceLamp)
 
