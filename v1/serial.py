@@ -31,12 +31,6 @@ class SerialHandler:
                     
     def handleGET(self, request):
         response = False;
-        if request.action == "TIME":
-            response = self.app.getTime()
-        if request.action == "UUID":
-            response = self.app.getUUID()
-        if request.action == "ACTIVATORS":
-            response = self.app.getActivators()
         if request.action == "LOG":
             response = self.app.getLog()
         if request.action == "ACTIVATIONS":
@@ -53,10 +47,6 @@ class SerialHandler:
         response = False
         if request.action == "TIME":
             response = self.app.setTime(request.payload)
-        if request.action == "UUID":
-            response = self.app.setUUID(request.payload)
-        if request.action == "ACTIVATORS":
-            response = self.app.setActivators(request.payload)
         if not response:
             response = "Error: Unknown action"
         return response
@@ -72,18 +62,14 @@ class MessageReader:
 
     def read_message(self):
         while True:
-            # read a single byte from the UART
             nbytes = self.uart.readinto(self.buf)
             if nbytes == 0:
                 continue
-            # check for the endline character
             if self.buf[0] == ord('\n'):
-                # we have received a complete message
                 message = uarray.array('B', self.message).decode()
                 self.message = bytearray()
                 return message
             else:
-                # add the received byte to the message buffer
                 self.message.append(self.buf[0])
 
 class Request:

@@ -22,7 +22,7 @@ class Logger:
     def network(self, message, data = "", type = "info"):
         self.add('network', type, message, data)
         
-    def add(self, logname, type, message, data):
+    def add(self, logname= "error", type= "warning", message = "no-message", data = ""):
         log.add({
             'log': logname,
             'timestamp': self.clock.datetime.__repr__(),

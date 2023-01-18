@@ -4,7 +4,7 @@ class Lamp:
         self.activated   = False
         self.iactivated  = False
         self.activator   = activator
-        self.activations = Activations()
+        self.activations = 0
         
 
 class LampCollection:
@@ -30,11 +30,16 @@ class LampCollection:
         self.lamps[uuid] = bool
 
     def isActivated(self):
+        if self.isIActivated():
+            return True
+        return self.local.activated
+
+    def isIActivated(self):
         for name in self.lamps:
             lamp = self.lamps[name]
             if lamp.activated and lamp.activator:
                 return True
-        return self.local.activated
+        return False
         
         
 class Activations:

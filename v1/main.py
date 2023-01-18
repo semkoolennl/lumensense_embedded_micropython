@@ -5,6 +5,7 @@ from app import App
 from serial import SerialHandler
 from communications import *
 from models import Lamp
+from handlers import *
 
 
 # set current date and time in datetime object
@@ -17,21 +18,29 @@ datetime=DateTime(
     seconds=55,
 )
 # set local device its UUID
-UUID = "RED"
+UUID = "BLACK"
 
 app = App(UUID, datetime)
-# app.lamps.add(Lamp("RED", False))
-app.lamps.add(Lamp("GREEN", True))
-app.lamps.add(Lamp("BLACK", False))
-app.lamps.add(Lamp("YELLOW", False))
-app.lamps.add(Lamp("WHITE", False))
+app.lamps.add(Lamp("RED", False))
+app.lamps.add(Lamp("GREEN", False))
+# app.lamps.add(Lamp("BLACK", False))
+app.lamps.add(Lamp("YELLOW", True))
 
-serial = SerialHandler(app)
+serialHandler  = SerialHandler(app)
 messageHandler = MessageHandler(app)
+motionHandler  = MotionHandler(app)
+lightHandler   = LightHandler(app)
 
 while True:
-    serial.handle()
+    serialHandler.handle()
     messageHandler.handle()
+    motionHandler.handle()
+    
+    if motionHandler.resetTimer:
+        app.timer.time = 3000
+        
+    lightHandler.handle()
+    
     app.run()
     
 

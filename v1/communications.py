@@ -39,7 +39,8 @@ class MessageHandler():
     def handleACT(self, message: Message):
         self.app.logger.general("MessageHandler - handleACT()")
         sourceLamp = self.app.lamps.getById(message.source)
-        sourceLamp.activated = True
+        sourceLamp.activated    = True
+        sourceLamp.activations += 1
         self.app.lamps.set(sourceLamp)
         if sourceLamp.activator:
             self.app.lamps.local.iactivated = True
@@ -56,19 +57,13 @@ class MessageHandler():
         sourceLamp = self.app.lamps.getById(message.source)
         if sourceLamp.activated:
             sourceLamp.activated = False
-            sourceLamp.activations.direct += 1
-            self.app.lamps.local.activations.indirect += 1
-        if self.app.lamps.local.iactivated:
-            self.app.lamps.local.iactivated = False
-            self.app.lamps.local.activations.indirect += 1
+            sourceLamp.iactivated = False
         self.app.lamps.set(sourceLamp)
 
     def handleUnknownMethod(self, message: Message):
         self.app.logger.general("MessageHandler - handleUnknownMethod()")
         msg = "'" + message.encode() + "'"
-        self.app.logger.error("Unkown method: " + msg, "fatal")
-            
-                
+        self.app.logger.error("Unkown method: " + msg, "fatal")                
                 
 
 class RTTP:
@@ -89,8 +84,7 @@ class RTTP:
         if response:
             self.last_response = response
             self.logger.network("RTTP - Message received", response)
-            self.message.parse(self.last_response)
-            return True
+            return self.message.parse(self.last_response)
         return False
 
     def setMessage(self, method, data = "", recipient = "ALL"):
